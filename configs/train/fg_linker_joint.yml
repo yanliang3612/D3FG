@@ -1,0 +1,48 @@
+model:
+  type: fgdiff
+  scheme: joint
+  fg_feat_dim: 512
+  pair_feat_dim: 256
+  node_feat_dim: 512
+  linker_protein_context: false
+  diffusion:
+    num_steps: 500
+    eps_net_opt:
+      num_layers: 6
+    position_scale: 1.0
+  train_structure: true
+  train_type: true
+  loss_weights:
+    fg_rot: 1.0
+    fg_pos: 1.0
+    fg_type: 1.0
+
+train:
+  max_epoch: 10000
+  val_freq: 20
+  seed: 2022
+  max_grad_norm: 100.0
+  optimizer:
+    type: adamw
+    lr: 5.e-4
+    weight_decay: 0.0
+    beta1: 0.9
+    beta2: 0.999
+  scheduler:
+    type: plateau
+    factor: 0.8
+    patience: 10
+    min_lr: 5.e-6
+  ema_decay: 0.9999
+
+dataset:
+  batch_size: 32
+  type: crossdocked
+  raw_path: /linhaitao/crossdocked_pocket10/
+  split_path: ./raw_data/split_by_name_10m.pt
+  transform:
+    - type: mask_linker
+    - type: mask_fg
+    - type: disturb_propos
+    - type: merge_pl_joint
+    - type: center_gen
